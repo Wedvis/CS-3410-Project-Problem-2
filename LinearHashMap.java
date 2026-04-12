@@ -115,6 +115,7 @@ public class LinearHashMap<K, V> implements Map<K, V> {
             for(int i = 0; i < array[index].size(); i++) {
                 if(array[index].get(i).getkey().equals(key)) {
                     KeyVal<V, K> keyval = array[index].remove(i);
+                    valCount--;
                     return keyval.getVal();
                 }
             }
