@@ -3,16 +3,22 @@ import java.util.*;
 
 public class LinearHashMapTest<K, V> implements Map<K, V> {
     ArrayList<KeyVal<V, K>>[] array;
-    int valCount = 0;
+    public int valCount = 0;
     boolean isResize = false;
+    public int collisions = 0;
 
     private void resize() {
 
         isResize = true;
 
         KeyVal<V, K>[] vals = new KeyVal[valCount];
-        ArrayList<KeyVal<V, K>>[] newArray = new ArrayList[array.length * 2];
-        for(int i = 0; i < array.length * 2; ++i) {
+        ArrayList<KeyVal<V, K>>[] newArray = new ArrayList[resizePrime(size())];
+        //Note, to use regular doubling algorithm for resize, just replace the stuff in brackets with
+        //array.length * 2
+
+        //Change i < resizePrime(size()) to < array.length * 2 if you are putting array.length * 2
+        //in the brackets
+        for(int i = 0; i < resizePrime(size()); ++i) {
             newArray[i] = new ArrayList<>();
         }
 
@@ -108,11 +114,14 @@ public class LinearHashMapTest<K, V> implements Map<K, V> {
     public V put(K key, V value) {
         KeyVal<V, K> keyval = new KeyVal<V, K>(value, key);
         int index = (int)(hashFunction(key) % size());
+        if(!array[index].isEmpty()) {
+            collisions++;
+        }
         array[index].add(keyval);
         if(!isResize) {
             valCount++;
         }
-        if(valCount > array.length / 2) {
+        if(valCount >= array.length / 2) {
             resize();
         }
         return value;
@@ -169,5 +178,36 @@ public class LinearHashMapTest<K, V> implements Map<K, V> {
     @Override
     public Set<Entry<K, V>> entrySet() {
         return Set.of();
+    }
+
+    //Found this algorithm for finding prime numbers from
+    // https://www.geeksforgeeks.org/java/java-prime-number-program/
+
+    private int resizePrime(int size) {
+        size *= 2;
+
+        while(!isPrime(size)) {
+            ++size;
+        }
+
+        return size;
+    }
+
+    private boolean isPrime(int n) {
+        // Corner case
+        if (n <= 1)
+            return false;
+        // For n=2 or n=3 it will check
+        if (n == 2 || n == 3)
+            return true;
+        // For multiple of 2 or 3 This will check
+        if (n % 2 == 0 || n % 3 == 0)
+            return false;
+        // It will check all the others condition
+        for (int i = 5; i <= Math.sqrt(n); i = i + 6)
+            if (n % i == 0 || n % (i + 2) == 0)
+                return false;
+
+        return true;
     }
 }
