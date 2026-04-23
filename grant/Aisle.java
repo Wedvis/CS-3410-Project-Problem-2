@@ -32,4 +32,6 @@ public interface Aisle
   public String getStockInfo();
 
   public String toString();
+
+  public Aisle getTerminatingAisle(Iterable<String> path);
 }
