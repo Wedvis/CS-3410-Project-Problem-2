@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface Aisle
 {
-  public Set<Item> getItems(Iterable<String> path);
+  public Iterable<Item> getItems(Iterable<String> path);
 
   public Item getItemById(int id);
 
-  public List<Item> getAllItems();
+  public Iterable<Item> getAllItems();
 
   public int getId();
 
