@@ -34,4 +34,6 @@ public interface Aisle
   public String toString();
 
   public Aisle getTerminatingAisle(Iterable<String> path);
+
+  public Set<Aisle> getSubAisles();
 }
