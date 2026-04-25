@@ -17,11 +17,11 @@ public interface Aisle
 
   public String getAisleName();
 
-  public Set<Item> getLowStock();
+  public Iterable<Item> getLowStock();
 
-  public Set<Item> getInStock();
+  public Iterable<Item> getInStock();
 
-  public Set<Item> getOverstock();
+  public Iterable<Item> getOverstock();
 
   public boolean hasItem(Item it);
 
