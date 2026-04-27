@@ -95,7 +95,8 @@ public class AisleMap implements Aisle
                         public boolean addItem(Item i, Iterable<String> path)
                         {
                             getTerminatingAisle(path)
-                            subAisles.add(new AisleTerminator(i.getName(),items,));
+                            Aisle e = new AisleTerminator(i.getName(),items,null)
+                            e.setId(subAisles.add(e));
                         }
 
                           public String getStockInfo();
@@ -145,7 +146,7 @@ public class AisleMap implements Aisle
 
 
   
-  private AisleIterable implements Iterable<Aisle>
+  private class AisleIterable implements Iterable<Aisle>
   {
     private Aisle target;
     protected Iterable<String> path;
@@ -161,7 +162,7 @@ public class AisleMap implements Aisle
       return new AisleIterator(target,path.iterator());
     }
 
-    private AisleIterator implements Iterator<Aisle>
+    private class AisleIterator implements Iterator<Aisle>
     {
       private Aisle currentTarget;
       protected Iterator<String> path;
@@ -248,7 +249,7 @@ public class AisleMap implements Aisle
     return RecursiveAisleIterator(subAisles.iterator());
   }
 
-  private AisleTerminator implements Aisle
+  private class AisleTerminator implements Aisle
   {
     private String name;
     private Item item;
@@ -287,7 +288,7 @@ public class AisleMap implements Aisle
 
     public boolean hasItem(Item it)
     {
-      return item.equals(it)
+      return item.equals(it);
     }
     public boolean hasItemId(int id)
     {
@@ -328,5 +329,4 @@ public class AisleMap implements Aisle
     {
       return true;
     }
-  }
 }
