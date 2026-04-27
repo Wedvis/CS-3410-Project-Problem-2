@@ -1,6 +1,7 @@
-package group_project;
+package group_project_p2;
 
 import java.util.TreeSet;
+import group_project_p2.LinearHashMap;
 public class IdTable<T>
 {
     int size;
@@ -9,7 +10,7 @@ public class IdTable<T>
     int nextId;
     public IdTable()
     {
-        this.table = new DblTableAutoResize<>(2,0.75);
+        this.table = new LinearHashMap<>(2);
         this.freedIds = new TreeSet<>();
         nextId = 0;
         size=0;
@@ -17,16 +18,14 @@ public class IdTable<T>
 
     public T get(int id)
     {
-        GenKeyVal<T,Integer> keyVal = table.get(id);
-        if(keyVal==null)
-            return null;
-        return keyVal.getVal();
+         return table.get(id);
     }
     public int add(T object, int id)
     {
-      if(id==-1)
-        return add(T);
-      return set(T,id);
+      if(id<0)
+        return add(object);
+      set(id,object);
+      return id;
     }
     public int add(T object)
     {
@@ -37,7 +36,7 @@ public class IdTable<T>
         }
         else
             nextId++;
-        table.put(object, id);
+        table.put(id, object);
         size++;
         return id;
     }
@@ -47,7 +46,7 @@ public class IdTable<T>
         T obj = get(id);
         if(obj==null)
             return null;
-        table.put(null,id);
+        table.put(id,null);
         freedIds.add(id);
         while((freedIds.getLast()+1)==nextId)
         {
@@ -62,7 +61,7 @@ public class IdTable<T>
     {
         if(get(id)==null)
             size++;
-        table.put(obj,id);
+        table.put(id,obj);
         freedIds.remove((Integer)id);
         if(id<nextId)
             return;
@@ -78,36 +77,4 @@ public class IdTable<T>
         return size;
     }
 
-    private class DblTableAutoResize<T,U> extends DblHashMap_HashCode<T, U>
-    {
-        private int size;
-        private double loadFactor;
-        public DblTableAutoResize(int size,double loadFactor)
-        {
-            super(size);
-            this.size = size;
-            this.loadFactor = loadFactor;
-        }
-
-        //Just doubles table once beyond load factor
-        @Override
-        public void put(T value, U key) {
-            super.put(value, key);
-            if(valCount<size*loadFactor)
-                return;
-            size = size*2;
-            resize(size);
-        }
-        public String toString()
-        {
-            String msg = "";
-            for(GenKeyVal<T,U> k : array)
-            {
-                if(k==null || k.getVal()==null)
-                    continue;
-                msg+= k.getkey() + "##" + k.getVal() + ";\n";
-            }
-            return msg;
-        }
-    }
 }
