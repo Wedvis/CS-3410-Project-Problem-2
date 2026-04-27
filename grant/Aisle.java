@@ -5,7 +5,7 @@ import group_project_p2.Item;
 import java.util.Set;
 import java.util.List;
 
-public interface Aisle
+public interface Aisle extends Iterable<Aisle>
 {
   public Iterable<Item> getItems(Iterable<String> path);
 
@@ -27,7 +27,7 @@ public interface Aisle
 
   public boolean hasItemId(int id);
 
-  public boolean addItem(Item i);
+  public boolean addItem(Item i, Iterable<String> path);
 
   public String getStockInfo();
 
@@ -35,5 +35,7 @@ public interface Aisle
 
   public Aisle getTerminatingAisle(Iterable<String> path);
 
-  public Set<Aisle> getSubAisles();
+  public Collection<Aisle> getSubAisles()
+
+  public boolean isEdge();
 }
