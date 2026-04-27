@@ -151,7 +151,17 @@ public class LinearHashMap<K, V> implements Map<K, V> {
 
     @Override
     public Collection<V> values() {
-        return List.of();
+        Collection<V> values = new ArrayList<>();
+        
+        for(ArrayList<KeyVal<V, K>> alist: array) {
+            if(!alist.isEmpty()) {
+                for(KeyVal<V, K> keyval: alist) {
+                    values.add(keyval.getVal());
+                }
+            }
+        }
+        
+        return values;
     }
 
     @Override
