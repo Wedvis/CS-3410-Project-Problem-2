@@ -1,18 +1,24 @@
 package group_project_p2;
-
+import java.lang.Iterable;
 public class Item {
 	private int id;
 	private int maxStock;
 	private int realizedStock;
 	private String name;
-	
-	
-	public Item(int id, int maxStock, int realizedStock, String name) {
+  private Iterable<String> path;
+
+	public Item(int id, int maxStock, int realizedStock, String name, Iterable<String> path) {
 		this.id = id;
 		this.maxStock = maxStock;
 		this.realizedStock = realizedStock;
 		this.name = name;
+    this.path = path;
 	}
+
+  public Iterable<String> getPath()
+  {
+    return path;
+  }
 	
 	public int getID() {
 		return id;
