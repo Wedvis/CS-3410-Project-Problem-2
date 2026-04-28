@@ -22,7 +22,7 @@ public class TEST {
 	
 	protected static void readFile() throws FileNotFoundException {
 
-		File file1 = new File("src/group_project2/copy/StoreData.txt");
+		File file1 = new File("src/group_project_p2/StoreData.txt");
 		
 		Scanner input = new Scanner(file1);
 		String[]  temp = input.nextLine().split(":");
