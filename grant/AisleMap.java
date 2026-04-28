@@ -253,23 +253,19 @@ public class AisleMap implements Aisle
 
       public Aisle next()
       {
-        if(!queued)
-          assert hasNext();
-          return currentTarget;
+        if(!queued && !hasNext())
+          throw new RuntimeException("Didn't check the Iterator");
+        return currentTarget;
       }
 
       public boolean hasNext()
       {
-        if(!path.hasNext())
-          return false;
-        if(!queued)
+        if(!queued && path.hasNext())
         {
           currentTarget = currentTarget.getAisle(path.next());
-          queued = true; 
+          queued = true;
         }
-        if(currentTarget==null)
-          return false;
-        return true;
+        return currentTarget!=null;
       }
     }
   }
