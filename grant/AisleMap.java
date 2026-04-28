@@ -184,7 +184,7 @@ public class AisleMap implements Aisle
                               private Aisle buildPath(Iterable<String> path)
                               {
                                   AisleIterable aiterable = new AisleIterable(this,path);
-                                  AisleIterable.AisleIterator aiterator = (AisleIterable.AisleIterator)(aiterable.iterator());
+                                  Iterator<Aisle> aiterator = aiterable.iterator();
                                   Aisle current = null;
                                   Iterator<String> parallelPath = path.iterator();
                                   while(aiterator.hasNext())
@@ -242,13 +242,13 @@ public class AisleMap implements Aisle
       private Aisle currentTarget;
       protected Iterator<String> path;
       private boolean nextAisle;
-      private boolean queued = false;
+      private boolean queued;
 
       public AisleIterator(Aisle target,Iterator<String> path)
       {
         this.currentTarget = target;
         this.path = path;
-        nextAisle = true;
+        queued = false;
       }
 
       public Aisle next()
@@ -263,7 +263,10 @@ public class AisleMap implements Aisle
         if(!path.hasNext())
           return false;
         if(!queued)
+        {
           currentTarget = currentTarget.getAisle(path.next());
+          queued = true; 
+        }
         if(currentTarget==null)
           return false;
         return true;
