@@ -215,12 +215,13 @@ public class AisleMap implements Aisle
       {
         if(currentIterator.hasNext())
           return currentIterator.next();
-        currentIterator = subAisles.next().iterator();
-        return next();
+        var nextUp = subAisles.next();
+        currentIterator = new RecursiveAisleIterator(nextUp.iterator());
+        return nextUp;
       }
       public boolean hasNext()
       {
-        return currentIterator.hasNext() && subAisles.hasNext();
+        return currentIterator.hasNext() || subAisles.hasNext();
       }
     }
 
