@@ -194,6 +194,8 @@ public class AisleMap implements Aisle
                                   }
                                   while(parallelPath.hasNext())
                                     {
+                                      if(current==null)
+                                        current = this;
                                       if(!(current instanceof AisleMap))
                                         throw new RuntimeException("Whoops, dead end");
                                       var cMap = (AisleMap)current;
