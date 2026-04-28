@@ -186,14 +186,18 @@ public class AisleMap implements Aisle
                                   AisleIterable aiterable = new AisleIterable(this,path);
                                   AisleIterable.AisleIterator aiterator = (AisleIterable.AisleIterator)(aiterable.iterator());
                                   Aisle current = null;
+                                  Iterator<String> parallelPath = path.iterator();
                                   while(aiterator.hasNext())
+                                  {
                                     current = aiterator.next();
-                                  while(aiterator.path.hasNext())
+                                    parallelPath.next(); 
+                                  }
+                                  while(parallelPath.hasNext())
                                     {
                                       if(!(current instanceof AisleMap))
                                         throw new RuntimeException("Whoops, dead end");
                                       var cMap = (AisleMap)current;
-                                      String str = aiterator.path.next();
+                                      String str = parallelPath.next();
                                       AisleMap newAisle = new AisleMap(str,items,aisleJumpTable,new ConcatIterable(this.path,Collections.singleton(str)));
                                       cMap.subAisles.put(str,newAisle);
                                       current = newAisle;
