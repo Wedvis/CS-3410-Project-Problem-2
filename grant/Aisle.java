@@ -34,6 +34,11 @@ public interface Aisle extends Iterable<Aisle>
 
   public boolean hasItem(Item it);
 
+  public default Iterable<Item> getItems()
+  {
+      return getAllItems();
+  }
+
   public boolean hasItemId(int id);
 
   public boolean addItem(Item i, Iterable<String> path);
@@ -82,4 +87,13 @@ public interface Aisle extends Iterable<Aisle>
 		}
 		return msg;
 	}
+
+  public void clear();
+
+  public boolean deleteEdge(Iterator<String> path);
+
+  public default void deletePath(Iterable<String> path)
+  {
+      deleteEdge(path.iterator());
+  }
 }

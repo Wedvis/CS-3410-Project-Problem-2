@@ -102,6 +102,36 @@ public class AisleMap implements Aisle
   
             }
 
+            public void deletePath(Iterable<String> path)
+            {
+                deleteEdge(path.iterator());
+            }
+
+            public boolean deleteEdge(Iterator<String> nextPath)
+            {
+                if(nextPath.hasNext())
+                {
+                    String nextStr = nextPath.next();
+                    Aisle nextAisle = getAisle(nextStr);
+                    if(nextAisle==null)
+                      throw new RuntimeException("Whoops, tried to delete nonexistent path");
+                    if(nextAisle.deleteEdge(nextPath))
+                      subAisles.remove(nextStr);
+                }
+                else
+                  clear();
+                return getSubAisles().size()==0; // Returns true if path entirely removed
+            }
+            public void clear()
+            {
+                for(Aisle a : getSubAisles())
+                {
+                  a.clear();
+                  subAisles.remove(a.getName());
+                  aisleJumpTable.remove(a.getId());
+                }
+            }
+
             public Iterable<String> getPath()
             {
               return path;
@@ -164,9 +194,6 @@ public class AisleMap implements Aisle
                             Aisle a = buildPath(path);
                             Aisle e = new AisleTerminator(i.getName(),items,aisleJumpTable,-1,i);
                             ((AisleMap)a).subAisles.put(i.getName(),e);
-                            // System.out.println(a.getName());
-                            // for(Item ie : a.getAllItems())
-                              // System.out.println(ie);
                             return e.getId()>=0;
                         }
                         public boolean addItem(Item i)
@@ -222,6 +249,10 @@ public class AisleMap implements Aisle
                                 public boolean isEdge()
                                 {
                                   return false;
+                                }
+                                public String toString()
+                                {
+                                    return this.toStringD();
                                 }
 
 
@@ -303,6 +334,7 @@ public class AisleMap implements Aisle
     }
 
 
+
       private class ItemIterable implements Iterable<Item>
       {
         private Aisle target;
@@ -317,37 +349,6 @@ public class AisleMap implements Aisle
           return new ItemIterator(target);
         }
 
-        // private class ItemIterator implements Iterator<Item>
-        // {
-        //   protected ItemIterator(Aisle target)
-        //   {
-        //     aisles = target.iterator();
-        //     queued = null;
-        //   }
-        //   private Iterator<Aisle> aisles;
-        //   private Iterator<Item> recursiveIte
-        //   private Item queued;
-        //
-        //   public Item next()
-        //   {
-        //     if(queued==null && !hasNext())
-        //       throw new RuntimeException("Oof iterator ran out");
-        //
-        //     Item ret = queued;
-        //     queued = null;
-        //     return ret;
-        //   }
-        //
-        //   public boolean hasNext()
-        //   {
-        //         while(aisles.hasNext() && queued == null)
-        //         {
-        //           Aisle current = aisles.next();
-        //           queued = current.getAllItems().iterator().next();
-        //         }
-        //         return queued!=null;
-        //   }
-        // }
         private class ItemIterator implements Iterator<Item>
         {
           private Iterator<Aisle> aisleIter;
@@ -485,6 +486,18 @@ public class AisleMap implements Aisle
       if(!item.isStockToLow())
         return Collections.singleton(item);
       return Collections.emptySet();
+    }
+    public boolean deleteEdge(Iterator<String> path)
+    {
+      if(path.hasNext())
+        throw new RuntimeException("Whoops, This is a Terminator Node");
+      clear();
+      return true;
+    }
+    public void clear()
+    {
+      items.remove(item.getID());
+      aisleJumpTable.remove(id);
     }
     public String toString()
     {
