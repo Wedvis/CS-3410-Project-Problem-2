@@ -257,11 +257,14 @@ public class AisleMap implements Aisle
       {
         if(!queued && !hasNext())
           throw new RuntimeException("Didn't check the Iterator");
+        queued = false;
         return currentTarget;
       }
 
       public boolean hasNext()
       {
+        if(!queued && !path.hasNext())
+          return false;
         if(!queued && path.hasNext())
         {
           currentTarget = currentTarget.getAisle(path.next());
