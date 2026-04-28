@@ -6,7 +6,7 @@ import java.util.Collection;
 import group_project_p2.Item;
 import java.util.Set;
 import java.util.List;
-
+import java.util.Collections;
 public interface Aisle extends Iterable<Aisle>
 {
   public Iterable<Item> getItems(Iterable<String> path);
@@ -37,6 +37,50 @@ public interface Aisle extends Iterable<Aisle>
   public default Iterable<Item> getItems()
   {
       return getAllItems();
+  }
+  public default void deleteItem(Item it)
+  {
+      deletePath(new ConcatIterable(it.getPath(),Collections.singleton(it.getName())));
+  }
+  public class ConcatIterable<T> implements Iterable<T>
+  {
+    private Iterable<T> rootIter;
+    private Iterable<T> nextIter;
+
+    public ConcatIterable(Iterable<T> root, Iterable<T> next)
+    {
+      this.rootIter = root;
+      this.nextIter = next;
+    }
+
+    public Iterator<T> iterator()
+    {
+      return new ConcatIterator(rootIter.iterator(),nextIter.iterator());
+    }
+
+    private class ConcatIterator<T> implements Iterator<T>
+    {
+      private Iterator<T> rootIter;
+      private Iterator<T> nextIter;
+      
+      public ConcatIterator(Iterator<T> root, Iterator<T> next)
+      {
+        this.rootIter = root;
+        this.nextIter = next;
+      }
+
+      public T next()
+      {
+        if(rootIter.hasNext())
+          return rootIter.next();
+        return nextIter.next();
+      }
+
+      public boolean hasNext()
+      {
+        return rootIter.hasNext() || nextIter.hasNext();
+      }
+    }
   }
 
   public boolean hasItemId(int id);
