@@ -184,7 +184,7 @@ public class AisleMap implements Aisle
                                     current = aiterator.next();
                                   return current;
                               }
-                              private Aisle buildPath(Iterable<String> path)
+                              public Aisle buildPath(Iterable<String> path)
                               {
                                   AisleIterable aiterable = new AisleIterable(this,path);
                                   Iterator<Aisle> aiterator = aiterable.iterator();
@@ -293,7 +293,7 @@ public class AisleMap implements Aisle
         if(currentIterator.hasNext())
           return currentIterator.next();
         var nextUp = subAisles.next();
-        currentIterator = new RecursiveAisleIterator(nextUp.iterator());
+        currentIterator = nextUp.iterator();
         return nextUp;
       }
       public boolean hasNext()
