@@ -162,8 +162,11 @@ public class AisleMap implements Aisle
                         public boolean addItem(Item i, Iterable<String> path)
                         {
                             Aisle a = buildPath(path);
-                            Aisle e = new AisleTerminator(i.getName(),items,aisleJumpTable,-1);
+                            Aisle e = new AisleTerminator(i.getName(),items,aisleJumpTable,-1,i);
                             ((AisleMap)a).subAisles.put(i.getName(),e);
+                            // System.out.println(a.getName());
+                            // for(Item ie : a.getAllItems())
+                              // System.out.println(ie);
                             return e.getId()>=0;
                         }
                         public boolean addItem(Item i)
@@ -282,7 +285,7 @@ public class AisleMap implements Aisle
       public RecursiveAisleIterator(Iterator<Aisle> subAisles)
       {
         this.subAisles = subAisles;
-        this.currentIterator = subAisles;
+        this.currentIterator = Collections.emptyIterator();
       }
 
       public Aisle next()
@@ -314,37 +317,72 @@ public class AisleMap implements Aisle
           return new ItemIterator(target);
         }
 
+        // private class ItemIterator implements Iterator<Item>
+        // {
+        //   protected ItemIterator(Aisle target)
+        //   {
+        //     aisles = target.iterator();
+        //     queued = null;
+        //   }
+        //   private Iterator<Aisle> aisles;
+        //   private Iterator<Item> recursiveIte
+        //   private Item queued;
+        //
+        //   public Item next()
+        //   {
+        //     if(queued==null && !hasNext())
+        //       throw new RuntimeException("Oof iterator ran out");
+        //
+        //     Item ret = queued;
+        //     queued = null;
+        //     return ret;
+        //   }
+        //
+        //   public boolean hasNext()
+        //   {
+        //         while(aisles.hasNext() && queued == null)
+        //         {
+        //           Aisle current = aisles.next();
+        //           queued = current.getAllItems().iterator().next();
+        //         }
+        //         return queued!=null;
+        //   }
+        // }
         private class ItemIterator implements Iterator<Item>
         {
-          protected ItemIterator(Aisle target)
+          private Iterator<Aisle> aisleIter;
+          private Item queued;  
+
+          public ItemIterator(Aisle target)
           {
-            aisles = target.iterator();
+            aisleIter = target.iterator();
             queued = null;
           }
-          private Iterator<Aisle> aisles;
-          private Item queued;
-          
+
           public Item next()
-          {
-            if(queued==null && !hasNext())
-              throw new RuntimeException("Oof iterator ran out");
-
-            Item ret = queued;
-            queued = null;
-            return ret;
-          }
-
-          public boolean hasNext()
-          {
-                while(aisles.hasNext() && queued == null)
+            {
+                if(queued==null && !hasNext())
+                  throw new RuntimeException("Oof Ran out");
+                var e = queued;
+                queued = null;
+                return e;
+            }
+            public boolean hasNext()
+            {
+                if(queued==null)
                 {
-                  Aisle current = aisles.next();
-                  if(current.isEdge())
-                    continue;
-                  queued = current.getAllItems().iterator().next();
+                  while(aisleIter.hasNext())
+                  {
+                    Aisle next = aisleIter.next();
+                      if(next.isEdge())
+                      {
+                        queued = ((AisleTerminator)(next)).getItem();
+                        break;
+                      }
+                  }
                 }
-                return queued!=null;
-          }
+                return queued != null;
+            }
         }
       
 
@@ -362,17 +400,17 @@ public class AisleMap implements Aisle
     private IdTable<Item> items;
     private int id;
 
-    public AisleTerminator(String name, IdTable<Item> items, IdTable<Aisle> aisleJumpTable,int id)
+    public AisleTerminator(String name, IdTable<Item> items, IdTable<Aisle> aisleJumpTable,int id,Item it)
     {
       this.name = name;
       this.items = items;
       this.aisleJumpTable = aisleJumpTable;
-      this.items = items;
+      this.item = it;
       this.id = this.aisleJumpTable.add(this,id);
     }
-    public AisleTerminator(String name, IdTable<Item> items, IdTable<Aisle> aisleJumpTable)
+    public AisleTerminator(String name, IdTable<Item> items, IdTable<Aisle> aisleJumpTable,Item it)
     {
-      this(name,items,aisleJumpTable,-1);
+      this(name,items,aisleJumpTable,-1,it);
     }
     public boolean addItem(Item it, Iterable<String> path)
     {
@@ -415,6 +453,11 @@ public class AisleMap implements Aisle
       if(path.iterator().hasNext())
         throw new RuntimeException("Whoops Terminator Node");
       return getAllItems();
+    }
+
+    public Item getItem()
+    {
+      return item;
     }
 
     public boolean hasItem(Item it)
