@@ -137,7 +137,6 @@ public class AisleMap implements Aisle
                                       var cMap = (AisleMap)current;
                                       String str = aiterator.path.next();
                                       AisleMap newAisle = new AisleMap(str,items,aisleJumpTable);
-                                      aisleJumpTable.add(newAisle);
                                       cMap.subAisles.put(str,newAisle);
                                       current = newAisle;
                                     }
@@ -371,7 +370,9 @@ public class AisleMap implements Aisle
     }
     public Aisle getTerminatingAisle(Iterable<String> path)
     {
-      throw new RuntimeException("Whoops This is a Terminator Node");
+      if(path.iterator().hasNext())
+        throw new RuntimeException("Whoops This is a Terminator Node");
+      return this;
     }
     public Collection<Aisle> getSubAisles()
     {
