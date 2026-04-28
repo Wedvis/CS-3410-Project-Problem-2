@@ -161,8 +161,9 @@ public class AisleMap implements Aisle
 
                         public boolean addItem(Item i, Iterable<String> path)
                         {
-                            getTerminatingAisle(path);
+                            Aisle a = buildPath(path);
                             Aisle e = new AisleTerminator(i.getName(),items,aisleJumpTable,-1);
+                            ((AisleMap)a).subAisles.put(i.getName(),e);
                             return e.getId()>=0;
                         }
                         public boolean addItem(Item i)
@@ -247,7 +248,7 @@ public class AisleMap implements Aisle
 
       public Aisle next()
       {
-        currentTarget = currentTarget.getTerminatingAisle(Collections.singleton(path.next()));
+        currentTarget = currentTarget.getAisle(path.next());
         return currentTarget;
       }
 

@@ -21,6 +21,8 @@ public interface Aisle extends Iterable<Aisle>
 
   public String getAisleName();
 
+  public Aisle getAisle(String next);
+
   public default String getName()
   {return getAisleName();}
 
