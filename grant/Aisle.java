@@ -15,6 +15,8 @@ public interface Aisle extends Iterable<Aisle>
 
   public Iterable<Item> getAllItems();
 
+  public Iterable<String> getPath();
+
   public int getId();
 
   public String getAisleName();

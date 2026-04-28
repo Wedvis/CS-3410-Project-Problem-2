@@ -12,19 +12,66 @@ public class AisleMap implements Aisle
   private IdTable<Aisle> aisleJumpTable;
   private String name;
   private int id;
+  private Iterable<String> path;
 
-  public AisleMap(String name, IdTable<Item> items, IdTable<Aisle> aisleJumpTable,int id)
+  public AisleMap(String name, IdTable<Item> items, IdTable<Aisle> aisleJumpTable,int id, Iterable<String> path)
   {
     this.name = name;
     this.items = items;
     this.aisleJumpTable = aisleJumpTable;
     this.subAisles = new LinearHashMap<String,Aisle>(2);
     this.id = aisleJumpTable.add(this,id);
+    this.path = path;
+  }
+  public AisleMap(String name, IdTable<Item> items, IdTable<Aisle> aisleJumpTable, Iterable<String> path)
+  {
+    this(name,items,aisleJumpTable,-1,path);
+  }
+
+  private class ConcatIterable<T> implements Iterable<T>
+  {
+    private Iterable<T> rootIter;
+    private Iterable<T> nextIter;
+
+    public ConcatIterable(Iterable<T> root, Iterable<T> next)
+    {
+      this.rootIter = root;
+      this.nextIter = next;
+    }
+
+    public Iterator<T> iterator()
+    {
+      return new ConcatIterator(rootIter.iterator(),nextIter.iterator());
+    }
+
+    private class ConcatIterator<T> implements Iterator<T>
+    {
+      private Iterator<T> rootIter;
+      private Iterator<T> nextIter;
+      
+      public ConcatIterator(Iterator<T> root, Iterator<T> next)
+      {
+        this.rootIter = root;
+        this.nextIter = next;
+      }
+
+      public T next()
+      {
+        if(rootIter.hasNext())
+          return rootIter.next();
+        return nextIter.next();
+      }
+
+      public boolean hasNext()
+      {
+        return rootIter.hasNext() || nextIter.hasNext();
+      }
+    }
   }
 
   public AisleMap(String name, IdTable<Item> items, IdTable<Aisle> aisleJumpTable)
   {
-    this(name,items,aisleJumpTable,-1);
+    this(name,items,aisleJumpTable,Collections.emptySet());
   }
   
     public Iterable<Item> getItems(Iterable<String> path)
@@ -52,6 +99,11 @@ public class AisleMap implements Aisle
             {
               return name;
   
+            }
+
+            public Iterable<String> getPath()
+            {
+              return path;
             }
 
               public Iterable<Item> getLowStock()
@@ -136,7 +188,7 @@ public class AisleMap implements Aisle
                                         throw new RuntimeException("Whoops, dead end");
                                       var cMap = (AisleMap)current;
                                       String str = aiterator.path.next();
-                                      AisleMap newAisle = new AisleMap(str,items,aisleJumpTable);
+                                      AisleMap newAisle = new AisleMap(str,items,aisleJumpTable,new ConcatIterable(this.path,Collections.singleton(str)));
                                       cMap.subAisles.put(str,newAisle);
                                       current = newAisle;
                                     }
@@ -309,6 +361,10 @@ public class AisleMap implements Aisle
       return id;
     }
 
+    public Iterable<String> getPath()
+    {
+      return item.getPath();
+    }
 
     public Aisle getAisle(String next)
     {
