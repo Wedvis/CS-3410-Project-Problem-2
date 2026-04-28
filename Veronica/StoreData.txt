@@ -1,0 +1,59 @@
+I_Exist:1
+(start aisle)
+Aisle_Id:01
+Aisle_Name:Canned Goods
+---
+Item_Id:011
+Item_MaxStock:50
+Item_RealStock:45
+Item_Name:Canned Peaches
+---
+Item_Id:012
+Item_MaxStock:55
+Item_RealStock:55
+Item_Name:Tomato Soup
+---
+Item_Id:013
+Item_MaxStock:20
+Item_RealStock:15
+Item_Name:Canned Corn
+---
+Item_Id:014
+Item_MaxStock:20
+Item_RealStock:17
+Item_Name:Mystery Soup
+---
+Item_Id:015
+Item_MaxStock:10
+Item_RealStock:20
+Item_Name:Wacky's Potato Soup
+---
+Item_Id:016
+Item_MaxStock:30
+Item_RealStock:22
+Item_Name:Canned Assorted Fruits
+(end aisle)
+(start aisle)
+Aisle_Id:02
+Aisle_Name: Toys
+---
+Item_Id:021
+Item_MaxStock:5
+Item_RealStock:3
+Item_Name:Jurasso Kid's TREX!
+---
+Item_Id:022
+Item_MaxStock:2
+Item_RealStock:2
+Item_Name:Jurasso Kid's TRICEROTOPS!
+---
+Item_Id:023
+Item_MaxStock:10
+Item_RealStock:8
+Item_Name:Assorted PuzzlePack
+---
+Item_Id:024
+Item_MaxStock:8
+Item_RealStock:6
+Item_Name:Sally Doll's Princess Sally
+(end aisle)
