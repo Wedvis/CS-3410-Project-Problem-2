@@ -84,12 +84,12 @@ public class LinearHashMap<K, V> implements Map<K, V> {
 
     private long hashFunction(K key) {
         if(key instanceof Number k)
-            return HashFunctions.javaIntRandomize(k.longValue());
+            return Math.abs(HashFunctions.javaIntRandomize(k.longValue()));
         int jbCode = key.hashCode();
         if(jbCode < 0) {
             return jbCode * -1;
         }
-        return jbCode;
+        return Math.abs(jbCode);
     }
     @Override
     public V put(K key, V value) {
