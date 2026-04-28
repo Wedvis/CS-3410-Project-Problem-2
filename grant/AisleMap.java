@@ -238,6 +238,7 @@ public class AisleMap implements Aisle
       private Aisle currentTarget;
       protected Iterator<String> path;
       private boolean nextAisle;
+      private boolean queued = false;
 
       public AisleIterator(Aisle target,Iterator<String> path)
       {
@@ -248,13 +249,20 @@ public class AisleMap implements Aisle
 
       public Aisle next()
       {
-        currentTarget = currentTarget.getAisle(path.next());
-        return currentTarget;
+        if(!queued)
+          assert hasNext();
+          return currentTarget;
       }
 
       public boolean hasNext()
       {
-        return path.hasNext();
+        if(!path.hasNext())
+          return false;
+        if(!queued)
+          currentTarget = currentTarget.getAisle(path.next());
+        if(currentTarget==null)
+          return false;
+        return true;
       }
     }
   }
