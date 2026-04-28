@@ -85,6 +85,7 @@ public class AisleMap implements Aisle
         return items.get(id);
       }
 
+
         public Iterable<Item> getAllItems()
         {
           return new ItemIterable(this);
@@ -163,6 +164,10 @@ public class AisleMap implements Aisle
                             getTerminatingAisle(path);
                             Aisle e = new AisleTerminator(i.getName(),items,aisleJumpTable,-1);
                             return e.getId()>=0;
+                        }
+                        public boolean addItem(Item i)
+                        {
+                            return addItem(i,i.getPath());
                         }
 
 
