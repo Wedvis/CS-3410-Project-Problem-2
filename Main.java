@@ -253,7 +253,7 @@ public class Main extends Application {
 	
 	protected void readFile() throws FileNotFoundException {
 
-		File file1 = new File("src/group_project_p2/StoreData.txt");
+		File file1 = new File("src/group_project2/copy/TESTdata.txt");
 		store = new AisleMap("Store", new IdTable<Item>(), new IdTable<Aisle>());
 		
 		Scanner input = new Scanner(file1);
@@ -607,11 +607,12 @@ public class Main extends Application {
 						
 					}
 				}
-				if (store.hasItem(new Item(9999,1,1,"Nester's Nevermore VHS",Arrays.asList("Video","Series","VHS","Nester's Nevermore VHS")))) {
+				if (VHSexists == 1) {
 					String nellieMsg = "Nellie here! Seems an item was somehow added to the system!\n"
 							+ "If you could just find that for me and press the button on the bottom right.\n"
 							+ "Thank you!";
 					txaResults.setText(nellieMsg);
+					VHSexists = 2;
 				}
 				if (deleteStore == 1) {
 					menuButtonSelection.setVisible(false);
@@ -710,10 +711,6 @@ public class Main extends Application {
 					store.addItem(new Item(9999,1,1,"Nester's Nevermore VHS",Arrays.asList("Video","Series","VHS","Nester's Nevermore VHS")));
 					msg += "ERROR";
 					VHSexists = 1;
-					String nellieMsg = "Nellie here! Seems an item was somehow added to the system!\n"
-							+ "If you could just find that for me and press the button on the top right.\n"
-							+ "Thank you!";
-					txaResults.setText(nellieMsg);
 				}
 			}
 		}
@@ -732,7 +729,7 @@ public class Main extends Application {
 		int index = 0;
 		for (Item i : allItems) {
 			if (index++ == random) {
-				if (VHSexists == 1) {
+				if (VHSexists == 2) {
 					String nellieMsg = "You let it get sold..."
 							+ "I'm... not mad\n"
 							+ "Just heart broken.\n\n\n"
