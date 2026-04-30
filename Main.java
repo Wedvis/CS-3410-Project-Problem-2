@@ -62,7 +62,7 @@ public class Main extends Application {
 	
 	private Pane buildGui(Stage stage) {
 		GridPane grid = new GridPane();
-		Image flavorBar = new Image("file:///C:/Users/lvdar/eclipse-workspace/CS%20test/Cards/src/group_project2/flavorBar2.png", 900, 900, true, true);
+		Image flavorBar = new Image("./flavorBar2.png", 900, 900, true, true);
 		ImageView flavor = new ImageView(flavorBar);
 		
 		
@@ -102,7 +102,7 @@ public class Main extends Application {
 		VBox vboxMiddle = new VBox();
 		VBox vboxRight = new VBox();
 		
-		Image helperImage = new Image("file:///C:/Users/lvdar/eclipse-workspace/CS%20test/Cards/src/group_project2/copy/storeHelper.png", 500, 500, true, true);
+		Image helperImage = new Image("./storeHelper.png", 500, 500, true, true);
 		helper = new ImageView(helperImage);
 		helper.setFitWidth(100);
 		helper.setFitHeight(100);
@@ -220,7 +220,7 @@ public class Main extends Application {
 	
 	protected void writeCardFile() throws FileNotFoundException {
 		try {
-			File file1 = new File("src/group_project2/copy/TESTdata.txt");
+			File file1 = new File("src/group_project_p2/StoreData.txt");
 			PrintWriter writer = new PrintWriter(file1);
 			writer.println("I_Exist:" + Existance);
 			Iterable<Item> items = store.getAllItems();
@@ -253,7 +253,7 @@ public class Main extends Application {
 	
 	protected void readFile() throws FileNotFoundException {
 
-		File file1 = new File("src/group_project2/copy/TESTdata.txt");
+		File file1 = new File("src/group_project_p2/StoreData.txt");
 		store = new AisleMap("Store", new IdTable<Item>(), new IdTable<Aisle>());
 		
 		Scanner input = new Scanner(file1);
@@ -767,13 +767,14 @@ public class Main extends Application {
 			btnSetMaxStock.setVisible(false);
 			txaSetMaxStock.setVisible(false);
 			btnSellItem.setVisible(false);
+			VHSexists = 0;
 		}
 	}
 	
 	private void helperBooped() {
-		Image image = new Image("file:///C:/Users/lvdar/eclipse-workspace/CS%20test/Cards/src/group_project2/storeHelper2.png", 500, 500, true, true);
+		Image image = new Image("./storeHelper2.png", 500, 500, true, true);
 		helper.setImage(image);
-		Image image2 = new Image("file:///C:/Users/lvdar/eclipse-workspace/CS%20test/Cards/src/group_project2/storeHelper.png", 500, 500, true, true);
+		Image image2 = new Image("./storeHelper.png", 500, 500, true, true);
 		delay(2000, () -> helper.setImage(image2));
 		clicks++;
 		String msg = "";
@@ -932,6 +933,7 @@ public class Main extends Application {
 					+ "When we found one, we would sing it out, casting both us, and our\r\n"
 					+ "audience to sleep.";
 			txaResults.setText(msg);
+			System.out.println(msg);
 			break;
 		case 17:
 			msg = "Isn't that really interesting?";
