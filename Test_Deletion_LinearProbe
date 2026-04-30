@@ -7,10 +7,7 @@ import java.util.Scanner;
 public class Test_Deletion_LinearProbe {
     public static void main(String[] args) {
         File data = new File("src/group_project_p2/data.csv");
-        File dblTest_delete = new File("src/group_project_p2/dblTest_delete.txt");
         boolean doesExist = data.exists();
-        //Note this file is not meant to be used directly. It's simply a reference for how testing should work with
-        //the linear probing deletion
 
         if (doesExist) {
             try {
