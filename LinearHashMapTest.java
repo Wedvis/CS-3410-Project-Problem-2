@@ -6,8 +6,8 @@ public class LinearHashMapTest<K, V> implements Map<K, V> {
     KeyVal<V, K>[] array;
     public int valCount = 0;
     boolean isResize = false;
-    public int collisions = 0;
-    public int probes_find = 0;
+    public int collisions = 0; //number of time collision occurs on first put attempt
+    public int probes_find = 0; //number of probing operations (including first check) during get
 
 
     private void resize() {
