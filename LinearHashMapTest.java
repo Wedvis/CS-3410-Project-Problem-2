@@ -2,40 +2,40 @@ package group_project_p2;
 import java.util.*;
 
 public class LinearHashMapTest<K, V> implements Map<K, V> {
-    ArrayList<KeyVal<V, K>>[] array;
+    KeyVal<V, K>[] array;
     public int valCount = 0;
     boolean isResize = false;
     public int collisions = 0;
+    public int probes_find = 0;
+
 
     private void resize() {
 
         isResize = true;
 
         KeyVal<V, K>[] vals = new KeyVal[valCount];
-        ArrayList<KeyVal<V, K>>[] newArray = new ArrayList[resizePrime(size())];
+        KeyVal<V, K>[] newArray = new KeyVal[size() * 2];
         //Note, to use regular doubling algorithm for resize, just replace the stuff in brackets with
         //array.length * 2
 
         //Change i < resizePrime(size()) to < array.length * 2 if you are putting array.length * 2
         //in the brackets
-        for(int i = 0; i < resizePrime(size()); ++i) {
-            newArray[i] = new ArrayList<>();
-        }
 
         int j = 0;
 
         for(int i = 0; i < array.length; i++) {
-            if(!array[i].isEmpty()) {
-                for(KeyVal<V, K> keyval: array[i]) {
-                    vals[j] = keyval;
-                    j++;
-                }
+            if(array[i] != null && array[i].getVal() != null) {
+                vals[j] = array[i];
+                ++j;
             }
         }
 
         array = newArray;
 
         for(KeyVal<V, K> keyval: vals) {
+            if(keyval == null) {
+                break;
+            }
             put(keyval.getkey(), keyval.getVal());
         }
 
@@ -43,10 +43,7 @@ public class LinearHashMapTest<K, V> implements Map<K, V> {
     }
 
     public LinearHashMapTest(int size) {
-        array = new ArrayList[size];
-        for(int i = 0; i < size; ++i) {
-            array[i] = new ArrayList<>();
-        }
+        array = new KeyVal[size];
     }
     @Override
     public int size() {
@@ -70,17 +67,21 @@ public class LinearHashMapTest<K, V> implements Map<K, V> {
 
     @Override
     public V get(Object key) {
-        int index = (int)(hashFunction((K) key) % size());
-        if(array[index].isEmpty()) {
+        long hash = hashFunction((K)key);
+        int index = (int)(hash % size());
+        if(array[index] == null) {
             return null;
         }
         else {
-            int i = 0;
-            for(KeyVal<V, K> keyval: array[index]) {
-                if(array[index].get(i).getkey().equals(key)) {
-                    return array[index].get(i).getVal();
+            for(int i = 0; i < array.length; i++) {
+                probes_find++;
+                index = (int)((hash + i) % size());
+                if(array[index] == null) {
+                    break;
                 }
-                i++;
+                if(array[index].getkey().equals(key)) {
+                    return array[index].getVal();
+                }
             }
         }
 
@@ -94,7 +95,7 @@ public class LinearHashMapTest<K, V> implements Map<K, V> {
         //Do not use any of the dbl hash functions, and for FNV functions use fnv1.
         long jbCode = 0;
         if(key instanceof String str) {
-            jbCode = HashFunctions.fnv1(str); //Change function to test different String hashfunctions
+            jbCode = HashFunctions.djb2(str); //Change function to test different String hashfunctions
             if(jbCode < 0) {
                 return jbCode * -1;
             }
@@ -112,37 +113,76 @@ public class LinearHashMapTest<K, V> implements Map<K, V> {
     }
     @Override
     public V put(K key, V value) {
+
         KeyVal<V, K> keyval = new KeyVal<V, K>(value, key);
-        int index = (int)(hashFunction(key) % size());
-        if(!array[index].isEmpty()) {
-            collisions++;
+        long hash = hashFunction(key);
+        int index = (int)(hash % size());
+        if(array[index] == null) {
+            array[index] = keyval;
+            if(!isResize) {
+                ++valCount;
+            }
+
+            if(valCount >= array.length/2) {
+                resize();
+            }
+            return value;
         }
-        array[index].add(keyval);
-        if(!isResize) {
-            valCount++;
+        else {
+            if(!isResize) {
+                ++collisions;
+            }
+            for(int i = 1; i < array.length; i++) {
+                index = (int)((hash + i) % size());
+                if(array[index] == null) {
+                    if(!isResize) {
+                        ++valCount;
+                    }
+                    array[index] = keyval;
+                    if(valCount >= array.length/2) {
+                        resize();
+                    }
+                    return value;
+                }
+            }
         }
-        if(valCount >= array.length / 2) {
-            resize();
-        }
-        return value;
+
+        System.out.println("place not found");
+        return null;
     }
 
     @Override
     public V remove(Object key) {
-        int index = (int)(hashFunction((K) key) % array.length);
-        if(array[index].isEmpty()) {
+        long hash = hashFunction((K)key);
+        int index = (int)(hash % array.length);
+        if(array[index] == null) {
             return null;
         }
         else {
-            for(int i = 0; i < array[index].size(); i++) {
-                if(array[index].get(i).getkey().equals(key)) {
-                    KeyVal<V, K> keyval = array[index].remove(i);
-                    return keyval.getVal();
+
+            if(array[index].getkey().equals(key)) {
+                V val = array[index].getVal();
+                array[index] = new KeyVal<>(null, (K)key);
+                return val;
+            }
+
+            else {
+                for(int i = 1; i < array.length; i++) {
+                    index = (int)((hash + i) % size());
+                    if(array[index] == null) {
+                        break;
+                    }
+                    else if(array[index].getkey().equals(key)) {
+                        V val = array[index].getVal();
+                        array[index] = new KeyVal<>(null, (K)key);
+                        return val;
+                    }
                 }
             }
         }
 
         return null;
+
     }
 
     @Override
@@ -159,11 +199,9 @@ public class LinearHashMapTest<K, V> implements Map<K, V> {
     public Set<K> keySet() {
         Set<K> keySet = new HashSet<>();
 
-        for(ArrayList<KeyVal<V, K>> alist: array) {
-            if(!alist.isEmpty()) {
-                for(KeyVal<V, K> keyval: alist) {
-                    keySet.add(keyval.getkey());
-                }
+        for(KeyVal<V, K> keyval: array) {
+            if(keyval != null) {
+              keySet.add(keyval.getkey());
             }
         }
 
