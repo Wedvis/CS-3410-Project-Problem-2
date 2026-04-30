@@ -3,6 +3,7 @@ import java.security.Key;
 import java.util.*;
 
 public class LinearHashMap<K, V> implements Map<K, V> {
+    //Note, the only functions used in the linear hash map class are size,  keySet, values, get, remove, put.
     KeyVal<V, K>[] array;
     public int valCount = 0;
     boolean isResize = false;
@@ -14,7 +15,7 @@ public class LinearHashMap<K, V> implements Map<K, V> {
         KeyVal<V, K>[] vals = new KeyVal[valCount];
         KeyVal<V, K>[] newArray = new KeyVal[array.length * 2];
         //Note, to use regular doubling algorithm for resize, just replace the stuff in brackets with
-        //array.length * 2
+        //array.length * 2, otherwise, use resizePrime[size()]
 
         int j = 0;
 
@@ -68,6 +69,7 @@ public class LinearHashMap<K, V> implements Map<K, V> {
             return null;
         }
         else {
+            //Note here there is no separation between the first attempt at get and the probing sequence, it all happens in this one for-loop.
             for(int i = 0; i < array.length; i++) {
                 index = (int)((hash + i) % size());
                 if(array[index] == null) {
@@ -111,6 +113,7 @@ public class LinearHashMap<K, V> implements Map<K, V> {
             return value;
         }
         else {
+            //probing sequence starts here.
             for(int i = 1; i < array.length; i++) {
                 index = (int)((hash + i) % size());
                 if(array[index] == null || array[index].getVal() == null) {
@@ -146,6 +149,7 @@ public class LinearHashMap<K, V> implements Map<K, V> {
             }
 
             else {
+                //probing sequence starts here.
                 for(int i = 1; i < array.length; i++) {
                     index = (int)((hash + i) % size());
                     if(array[index] == null) {
