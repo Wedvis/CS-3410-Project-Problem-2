@@ -7,10 +7,8 @@ import java.util.Scanner;
 public class Test_Deletion_DBLhash {
     public static void main(String[] args) {
         File data = new File("src/group_project/data.csv");
-        File dblTest_delete = new File("src/group_project/dblTest_delete.txt");
         boolean doesExist = data.exists();
-        //Note this file is not meant to be used directly. It's simply a reference for how testing should work with
-        //the linear probing deletion
+        //Note this file is meant to be used in project 1 package, not project 2.
 
         if (doesExist) {
             try {
