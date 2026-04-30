@@ -3,8 +3,8 @@ import java.security.Key;
 import java.util.*;
 
 public class LinearHashMap<K, V> implements Map<K, V> {
-    ArrayList<KeyVal<V, K>>[] array;
-    int valCount = 0;
+    KeyVal<V, K>[] array;
+    public int valCount = 0;
     boolean isResize = false;
 
     private void resize() {
@@ -12,25 +12,25 @@ public class LinearHashMap<K, V> implements Map<K, V> {
         isResize = true;
 
         KeyVal<V, K>[] vals = new KeyVal[valCount];
-        ArrayList<KeyVal<V, K>>[] newArray = new ArrayList[array.length * 2];
-        for(int i = 0; i < array.length * 2; ++i) {
-            newArray[i] = new ArrayList<>();
-        }
+        KeyVal<V, K>[] newArray = new KeyVal[array.length * 2];
+        //Note, to use regular doubling algorithm for resize, just replace the stuff in brackets with
+        //array.length * 2
 
         int j = 0;
 
         for(int i = 0; i < array.length; i++) {
-            if(!array[i].isEmpty()) {
-                for(KeyVal<V, K> keyval: array[i]) {
-                    vals[j] = keyval;
-                    j++;
-                }
+            if(array[i] != null && array[i].getVal() != null) {
+                vals[j] = array[i];
+                ++j;
             }
         }
 
         array = newArray;
 
         for(KeyVal<V, K> keyval: vals) {
+            if(keyval == null) {
+                break;
+            }
             put(keyval.getkey(), keyval.getVal());
         }
 
@@ -38,10 +38,7 @@ public class LinearHashMap<K, V> implements Map<K, V> {
     }
 
     public LinearHashMap(int size) {
-        array = new ArrayList[size];
-        for(int i = 0; i < size; ++i) {
-            array[i] = new ArrayList<>();
-        }
+        array = new KeyVal[size];
     }
     @Override
     public int size() {
@@ -65,17 +62,20 @@ public class LinearHashMap<K, V> implements Map<K, V> {
 
     @Override
     public V get(Object key) {
-        int index = (int)(hashFunction((K) key) % size());
-        if(array[index].isEmpty()) {
+        long hash = hashFunction((K)key);
+        int index = (int)(hash % size());
+        if(array[index] == null) {
             return null;
         }
         else {
-            int i = 0;
-            for(KeyVal<V, K> keyval: array[index]) {
-                if(array[index].get(i).getkey().equals(key)) {
-                    return array[index].get(i).getVal();
+            for(int i = 0; i < array.length; i++) {
+                index = (int)((hash + i) % size());
+                if(array[index] == null) {
+                    break;
                 }
-                i++;
+                if(array[index].getkey().equals(key)) {
+                    return array[index].getVal();
+                }
             }
         }
 
@@ -83,45 +83,85 @@ public class LinearHashMap<K, V> implements Map<K, V> {
     }
 
     private long hashFunction(K key) {
+        long jbCode = 0;
+
         if(key instanceof Number k)
             return Math.abs(HashFunctions.javaIntRandomize(k.longValue()));
-        int jbCode = key.hashCode();
+        jbCode = key.hashCode();
+
         if(jbCode < 0) {
             return jbCode * -1;
         }
-        return Math.abs(jbCode);
+        return jbCode;
     }
     @Override
     public V put(K key, V value) {
         KeyVal<V, K> keyval = new KeyVal<V, K>(value, key);
-        int index = (int)(hashFunction(key) % size());
-        array[index].add(keyval);
-        if(!isResize) {
-            valCount++;
+        long hash = hashFunction(key);
+        int index = (int)(hash % size());
+        if(array[index] == null || array[index].getVal() == null) {
+            array[index] = keyval;
+            if(!isResize) {
+                ++valCount;
+            }
+
+            if(valCount >= array.length/2) {
+                resize();
+            }
+            return value;
         }
-        if(valCount > array.length / 2) {
-            resize();
+        else {
+            for(int i = 1; i < array.length; i++) {
+                index = (int)((hash + i) % size());
+                if(array[index] == null || array[index].getVal() == null) {
+                    if(!isResize) {
+                        ++valCount;
+                    }
+                    array[index] = keyval;
+                    if(valCount >= array.length/2) {
+                        resize();
+                    }
+                    return value;
+                }
+            }
         }
-        return value;
+
+        System.out.println("place not found");
+        return null;
     }
 
     @Override
     public V remove(Object key) {
-        int index = (int)(hashFunction((K) key) % array.length);
-        if(array[index].isEmpty()) {
+        long hash = hashFunction((K)key);
+        int index = (int)(hash % array.length);
+        if(array[index] == null) {
             return null;
         }
         else {
-            for(int i = 0; i < array[index].size(); i++) {
-                if(array[index].get(i).getkey().equals(key)) {
-                    KeyVal<V, K> keyval = array[index].remove(i);
-                    valCount--;
-                    return keyval.getVal();
+
+            if(array[index].getkey().equals(key)) {
+                V val = array[index].getVal();
+                array[index] = new KeyVal<>(null, (K)key);
+                return val;
+            }
+
+            else {
+                for(int i = 1; i < array.length; i++) {
+                    index = (int)((hash + i) % size());
+                    if(array[index] == null) {
+                        break;
+                    }
+                    else if(array[index].getkey().equals(key)) {
+                        V val = array[index].getVal();
+                        array[index] = new KeyVal<>(null, (K)key);
+                        return val;
+                    }
                 }
             }
         }
 
         return null;
+
     }
 
     @Override
@@ -138,11 +178,9 @@ public class LinearHashMap<K, V> implements Map<K, V> {
     public Set<K> keySet() {
         Set<K> keySet = new HashSet<>();
 
-        for(ArrayList<KeyVal<V, K>> alist: array) {
-            if(!alist.isEmpty()) {
-                for(KeyVal<V, K> keyval: alist) {
-                    keySet.add(keyval.getkey());
-                }
+        for(KeyVal<V, K> keyval: array) {
+            if(keyval != null && keyval.getVal() != null) {
+              keySet.add(keyval.getkey());
             }
         }
 
@@ -152,20 +190,51 @@ public class LinearHashMap<K, V> implements Map<K, V> {
     @Override
     public Collection<V> values() {
         Collection<V> values = new ArrayList<>();
-        
-        for(ArrayList<KeyVal<V, K>> alist: array) {
-            if(!alist.isEmpty()) {
-                for(KeyVal<V, K> keyval: alist) {
-                    values.add(keyval.getVal());
-                }
+
+        for(KeyVal<V, K> keyval: array) {
+            if(keyval != null && keyval.getVal() != null) {
+                values.add(keyval.getVal());
             }
         }
-        
+
         return values;
     }
 
     @Override
     public Set<Entry<K, V>> entrySet() {
         return Set.of();
+    }
+
+
+
+    //Found this algorithm for finding prime numbers from
+    // https://www.geeksforgeeks.org/java/java-prime-number-program/
+
+    private int resizePrime(int size) {
+        size *= 2;
+
+        while(!isPrime(size)) {
+            ++size;
+        }
+
+        return size;
+    }
+
+    private boolean isPrime(int n) {
+        // Corner case
+        if (n <= 1)
+            return false;
+        // For n=2 or n=3 it will check
+        if (n == 2 || n == 3)
+            return true;
+        // For multiple of 2 or 3 This will check
+        if (n % 2 == 0 || n % 3 == 0)
+            return false;
+        // It will check all the others condition
+        for (int i = 5; i <= Math.sqrt(n); i = i + 6)
+            if (n % i == 0 || n % (i + 2) == 0)
+                return false;
+
+        return true;
     }
 }
