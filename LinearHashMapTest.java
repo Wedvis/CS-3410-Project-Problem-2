@@ -2,6 +2,7 @@ package group_project_p2;
 import java.util.*;
 
 public class LinearHashMapTest<K, V> implements Map<K, V> {
+    //Check linearHashMap for more info on how to use linear hashmap class
     KeyVal<V, K>[] array;
     public int valCount = 0;
     boolean isResize = false;
@@ -16,11 +17,8 @@ public class LinearHashMapTest<K, V> implements Map<K, V> {
         KeyVal<V, K>[] vals = new KeyVal[valCount];
         KeyVal<V, K>[] newArray = new KeyVal[size() * 2];
         //Note, to use regular doubling algorithm for resize, just replace the stuff in brackets with
-        //array.length * 2
-
-        //Change i < resizePrime(size()) to < array.length * 2 if you are putting array.length * 2
-        //in the brackets
-
+        //array.length * 2, otherwise use resizePrime(size())
+        
         int j = 0;
 
         for(int i = 0; i < array.length; i++) {
