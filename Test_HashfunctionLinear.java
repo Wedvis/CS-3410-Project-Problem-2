@@ -23,10 +23,8 @@ public class Test_HashfunctionLinear {
                 int value = 0;
                 while(input.hasNext()) {
                     String[] line = input.next().split(",");
-                    if(Double.parseDouble(line[4]) > -7) {
-                        test.put(line[0], 0);
-                        writer.println(test.valCount + "," + test.collisions);
-                    }
+                    test.put(line[0], 0);
+                    writer.println(test.valCount + "," + test.collisions);
                 }
                 long t2 = System.nanoTime();
                 System.out.println(t2 - t1);
